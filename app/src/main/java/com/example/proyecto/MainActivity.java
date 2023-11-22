@@ -80,20 +80,13 @@ private ListView lista;
 
         AdapterView.AdapterContextMenuInfo info=(AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         Film f=(Film) lista.getItemAtPosition(info.position);
+        
         int id=item.getItemId();
 
         if(id==R.id.opcion1){
             Toast.makeText(getApplicationContext(), "Has pulsado Acerca de ", Toast.LENGTH_LONG).show();
             Intent si=new Intent(this,AboutActivity.class);
             startActivity(si);
-            return true;
-        }else if (id==R.id.opcion2){
-            Toast.makeText(getApplicationContext(),"Has pulsado añadir peliculas",Toast.LENGTH_LONG).show();
-            //Intent si=new Intent();
-            //startActivity(si);
-            return true;
         }
-
         return super.onContextItemSelected(item);
     }
-}
