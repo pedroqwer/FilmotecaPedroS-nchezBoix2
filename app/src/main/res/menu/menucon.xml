@@ -4,8 +4,4 @@
         android:id="@+id/eliminar"
         android:icon="@android:drawable/ic_delete"
         android:title="Eliminar" />
-    <item
-        android:id="@+id/editar"
-        android:icon="@android:drawable/ic_menu_edit"
-        android:title="Editar" />
 </menu>
