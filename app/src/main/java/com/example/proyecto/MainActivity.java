@@ -64,12 +64,14 @@ private ListView lista;
             Toast.makeText(getApplicationContext(), "Has pulsado Acerca de ", Toast.LENGTH_LONG).show();
             Intent si=new Intent(this,AboutActivity.class);
             startActivity(si);
-            return true;
+           
         }else if (id==R.id.opcion2){
             Toast.makeText(getApplicationContext(),"Has pulsado añadir peliculas",Toast.LENGTH_LONG).show();
+            FilmDataSource.films.add(film=new Film(R.drawable.ic_launcher_background,"Titulo nuevo","Director nuevo",2002,1,2,"Nuevo enlace","Nuevo comentario"));
+            filmListActivity.notifyDataSetChanged();
             //Intent si=new Intent();
             //startActivity(si);
-            return true;
+         
         }
 
         return  super.onOptionsItemSelected(item);
