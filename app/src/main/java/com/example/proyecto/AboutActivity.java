@@ -20,7 +20,7 @@ public class AboutActivity extends AppCompatActivity {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = "https://github.com/pedroqwer/FilmotecaPedroSanchezBoix";
+                String url = "https://github.com/pedroqwer/FilmotecaPedroS-nchezBoix2";
 
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
