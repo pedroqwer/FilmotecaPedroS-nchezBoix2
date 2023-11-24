@@ -15,10 +15,8 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private ListView lista;
-
-    FilmListActivity filmListActivity;
+    private     FilmListActivity filmListActivity;
     Film film;
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -54,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.menucon, menu);
 
         super.onCreateContextMenu(menu, v, menuInfo);
     }
@@ -90,9 +88,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         int id = item.getItemId();
 
         if (id == R.id.opcion1) {
-            Toast.makeText(getApplicationContext(), "Has pulsado Acerca de ", Toast.LENGTH_LONG).show();
-            Intent si = new Intent(this, AboutActivity.class);
-            startActivity(si);
+           Toast.makeText(getApplicationContext(), "Eliminar " + f.getTitle(), Toast.LENGTH_LONG).show();
+            FilmDataSource.films.remove(f);
+
+            filmListActivity.notifyDataSetChanged();
         }
         return super.onContextItemSelected(item);
     }
