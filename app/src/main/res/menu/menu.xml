@@ -2,16 +2,12 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="Item" >
-        <menu >
-            <item
-                android:id="@+id/opcion1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:title="Acerca de" />
-            <item
-                android:id="@+id/opcion2"
-                android:title="Añadir pelicula"></item>
-        </menu>
-    </item>
+   <item
+        android:id="@+id/abo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Acerca de" />
+    <item
+        android:id="@+id/opcion2"
+        android:title="Añadir pelicula"></item>
 </menu>
