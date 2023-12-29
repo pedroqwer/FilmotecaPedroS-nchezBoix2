@@ -1,4 +1,16 @@
 <resources>
     <string name="app_name">Proyecto</string>
-    <string name="hello_world">Hello</string>
+        <string-array name="gen">
+        <item>Accion</item>
+        <item>Comedia</item>
+        <item>Drama</item>
+        <item>Ciencia Ficcion</item>
+        <item>Horror</item>
+    </string-array>
+
+    <string-array name="formato">
+        <item>DVD</item>
+        <item>Bluray</item>
+        <item>Digital</item>
+    </string-array>
 </resources>
