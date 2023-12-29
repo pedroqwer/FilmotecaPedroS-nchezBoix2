@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.cardview.widget.CardView
+   <androidx.cardview.widget.CardView
         android:layout_width="404dp"
         android:layout_height="242dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,7 +29,7 @@
                 app:layout_constraintVertical_bias="0.578"
                 tools:srcCompat="@tools:sample/avatars" />
 
-           <TextView
+            <TextView
                 android:id="@+id/titulo"
                 android:layout_width="198dp"
                 android:layout_height="86dp"
@@ -43,7 +43,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.198" />
 
-           <TextView
+            <TextView
                 android:id="@+id/director"
                 android:layout_width="206dp"
                 android:layout_height="48dp"
