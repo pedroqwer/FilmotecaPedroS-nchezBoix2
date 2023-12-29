@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".FilmEditActivity">
 
-    <androidx.cardview.widget.CardView
+  <androidx.cardview.widget.CardView
         android:layout_width="407dp"
         android:layout_height="724dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+            android:layout_width="409dp"
             android:layout_height="match_parent">
 
             <EditText
@@ -34,8 +34,8 @@
 
             <EditText
                 android:id="@+id/edicioncomentario"
-                android:layout_width="381dp"
-                android:layout_height="105dp"
+                android:layout_width="382dp"
+                android:layout_height="78dp"
                 android:ems="10"
                 android:inputType="text|textMultiLine"
                 android:singleLine="false"
@@ -90,9 +90,12 @@
 
             <Button
                 android:id="@+id/Captura_imagen"
-                android:layout_width="118dp"
-                android:layout_height="78dp"
+                android:layout_width="113dp"
+                android:layout_height="80dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:text="CAPTURA IMAGEN"
+                app:cornerRadius="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
@@ -114,21 +117,27 @@
 
             <Button
                 android:id="@+id/selectt"
-                android:layout_width="131dp"
-                android:layout_height="82dp"
+                android:layout_width="113dp"
+                android:layout_height="80dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:text="SELECCIONA IMAGEN"
+                app:cornerRadius="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_bias="0.945"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.08" />
+                app:layout_constraintVertical_bias="0.085" />
 
             <Button
                 android:id="@+id/cancelar"
                 android:layout_width="170dp"
                 android:layout_height="44dp"
                 android:text="Cancelar"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.054"
@@ -141,12 +150,39 @@
                 android:layout_width="170dp"
                 android:layout_height="44dp"
                 android:text="Guardar"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.932"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.991" />
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="405dp"
+                android:layout_height="wrap_content"
+                android:entries="@array/formato"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.727" />
+
+            <Spinner
+                android:id="@+id/spinner2"
+                android:layout_width="407dp"
+                android:layout_height="wrap_content"
+                android:entries="@array/gen"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.778" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
