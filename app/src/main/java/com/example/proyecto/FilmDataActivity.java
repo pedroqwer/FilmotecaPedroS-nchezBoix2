@@ -17,82 +17,107 @@ import java.util.ArrayList;
 
 public class FilmDataActivity extends AppCompatActivity  {
 
-    Button volver;
-
-    Button editar;
-
-
-
-    private Film film;
+  int posicion;
+    Film film;
+    TextView tit, dir, commm, any;
+    Button bo, volver, editar;
+    private static final int Edi = 1;
+    String anyo, formatoGenero, formato;
+    int gen, form;
+    ImageView imgView;
+    TextView txtComentario, txtFormato, txtGenero, txtNumAnyo, txtNomDirector, txtNomPelicula;
+    Button btnWebIMDB, btnVolverMenu, btnEditar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_film_data);
 
-       Intent intent=getIntent();
-       int posicion=intent.getIntExtra("FILM_POSITION",0);
+        imgView = (ImageView) findViewById(R.id.imaa);
+        txtNomPelicula = (TextView) findViewById(R.id.tituloo);
+        txtNomDirector = (TextView) findViewById(R.id.directorrr);
+        txtNumAnyo = (TextView) findViewById(R.id.anyoo);
+        txtFormato = (TextView) findViewById(R.id.F);
+        txtGenero=(TextView) findViewById(R.id.G);
+        txtComentario = (TextView) findViewById(R.id.comen);
+        txtComentario.setMovementMethod(new ScrollingMovementMethod());
+        btnWebIMDB = (Button) findViewById(R.id.botonenlace);
+        btnVolverMenu = (Button) findViewById(R.id.BotonvolverList);
+        btnEditar = (Button) findViewById(R.id.edit);
 
-        film=FilmDataSource.films.get(posicion);
+        Intent intent = getIntent();
+        posicion = intent.getIntExtra("Pelicula", 0);
 
-        TextView tit=findViewById(R.id.tituloo);
-        tit.setText(film.getTitle());
 
-        TextView dir=findViewById(R.id.directorrr);
-        dir.setText(film.getDirector());
+        imgView.setImageResource(FilmDataSource.films.get(posicion).getImageResId());
+        txtNomPelicula.setText(FilmDataSource.films.get(posicion).getTitle().toString());
+        txtNomDirector.setText(FilmDataSource.films.get(posicion).getDirector().toString());
 
-        TextView commm=findViewById(R.id.comen);
-        commm.setText(film.getComments());
+        anyo = String.valueOf(FilmDataSource.films.get(posicion).getYear());
+        txtNumAnyo.setText(anyo);
 
-        Button bo=findViewById(R.id.botonenlace);
-        bo.setOnClickListener(new View.OnClickListener() {
+        formatoGenero="";
+
+        form =FilmDataSource.films.get(posicion).getFormat();
+
+        if(form ==0){
+            formato="DVD";
+        } else if (form==1) {
+            formato =" Bluray";
+        } else if (form==2) {
+            formato="Digital";
+        }
+
+
+        txtGenero.setText(formato);
+
+        gen = FilmDataSource.films.get(posicion).getGenre();
+        if (gen == 0) {
+            formatoGenero = "Action";
+        } else if (gen == 1) {
+            formatoGenero = "Comedy";
+        } else if (gen == 2) {
+            formatoGenero = "Drama";
+        } else if (gen == 3) {
+            formatoGenero = "Scifi";
+        } else if (gen == 4) {
+            formatoGenero = "Horror";
+        }
+
+
+        txtFormato.setText(formatoGenero);
+
+        txtComentario.setText(FilmDataSource.films.get(posicion).getComments());
+
+        btnWebIMDB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url=film.getImdbUrl();
-
-                Uri uri=Uri.parse(url);
-
-                Intent intent1=new Intent(Intent.ACTION_VIEW,uri);
-                if(intent1.resolveActivity(getPackageManager())!=null){
-                    startActivity(intent1);
-                }
+                Toast.makeText(getApplicationContext(), "Redirigiendote a la página de IMDB de la película...", Toast.LENGTH_SHORT).show();
+                Intent intentWeb = new Intent(Intent.ACTION_VIEW);
+                intentWeb.setData(Uri.parse(FilmDataSource.films.get(posicion).getImdbUrl()));
+                startActivity(intentWeb);
             }
         });
-
-        ImageView imm=findViewById(R.id.imaa);
-        imm.setImageResource(film.getImageResId());
-
-        TextView any =findViewById(R.id.anyoo);
-        any.setText(String.valueOf(film.getYear()));
-
-        TextView form=findViewById(R.id.F);
-        form.setText(Formato(film.getFormat()));
-
-        TextView gen=findViewById(R.id.G);
-        gen.setText(Genero(film.getGenre()));
-
-
-
 
 
         //Botones
 
-        volver=(Button)findViewById(R.id.BotonvolverList);
+        volver = (Button) findViewById(R.id.BotonvolverList);
 
         volver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), "Has vuelto al inicio", Toast.LENGTH_SHORT).show();
-                Intent i=new Intent(FilmDataActivity.this,MainActivity.class);
-                startActivity(i);
+                Intent i = new Intent();
+                setResult(RESULT_OK, intent);
+                finish();
             }
-
 
 
         });
 
 
-        editar=(Button) findViewById(R.id.edit);
+        editar = (Button) findViewById(R.id.edit);
 
         editar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,11 +126,9 @@ public class FilmDataActivity extends AppCompatActivity  {
 
                 Toast.makeText(getApplicationContext(), "Edición de película", Toast.LENGTH_SHORT).show();
 
-
-                Intent intent=new Intent(FilmDataActivity.this, FilmEditActivity.class);
-                intent.putExtra("FILM_POSITION", posicion);
-                startActivity(intent);
-
+                Intent intentFilmEditActivity = new Intent(FilmDataActivity.this, FilmEditActivity.class);
+                intentFilmEditActivity.putExtra("Pelicula", posicion);
+                startActivityForResult(intentFilmEditActivity, Edi);
 
             }
 
@@ -113,37 +136,58 @@ public class FilmDataActivity extends AppCompatActivity  {
 
     }
 
-    private String Genero(int genre) {
-        switch (genre){
-            case Film.GENRE_ACTION:
-                return "Accion";
-            case Film.GENRE_COMEDY:
-                return "Comedia";
-            case Film.GENRE_DRAMA:
-                return "Drama";
-            case Film.GENRE_HORROR:
-                return "Horror";
-            case Film.GENRE_SCIFI:
-                return "Scifi";
-            default:
-                return "desconocido";
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Edi) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(getApplicationContext(), "Cambios aplicados correctamente", Toast.LENGTH_SHORT).show();
+
+                txtNomPelicula.setText(FilmDataSource.films.get(posicion).getTitle().toString());
+                txtNomDirector.setText(FilmDataSource.films.get(posicion).getDirector().toString());
+                anyo = String.valueOf(FilmDataSource.films.get(posicion).getYear());
+                txtNumAnyo.setText(anyo);
+                btnWebIMDB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getApplicationContext(), "Redirigiendote a la página de IMDB de la película...", Toast.LENGTH_SHORT).show();
+                        Intent intentWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(FilmDataSource.films.get(posicion).getImdbUrl()));
+                        startActivity(intentWeb);
+                    }
+                });
+                txtComentario.setText(FilmDataSource.films.get(posicion).getComments().toString());
+
+                formato = "";
+                form = FilmDataSource.films.get(posicion).getFormat();
+                if (form == 0) {
+                    formato = "DVD ";
+                } else if (form == 1) {
+                    formato = "Bluray ";
+                } else if (form == 2) {
+                    formato = "Digital ";
+                }
+
+
+                gen = FilmDataSource.films.get(posicion).getGenre();
+                if (gen == 0) {
+                    formatoGenero = "Action";
+                } else if (gen == 1) {
+                    formatoGenero = "Comedy";
+                } else if (gen == 2) {
+                    formatoGenero = "Drama";
+                } else if (gen == 3) {
+                    formatoGenero = "Scifi";
+                } else if (gen == 4) {
+                    formatoGenero = "Horror";
+                }
+                txtFormato.setText(formatoGenero);
+
+                txtGenero.setText(formato);
+
+
+            } else {
+                Toast.makeText(getApplicationContext(), "Los cambios han sido cancelados", Toast.LENGTH_SHORT).show();
+            }
         }
     }
-
-    private String Formato(int format) {
-      switch (format){
-          case  Film.FORMAT_DVD:
-              return "DVD";
-          case  Film.FORMAT_BLURAY:
-              return  "Bluray";
-          case  Film.FORMAT_DIGITAL:
-              return "Digital";
-          default:
-              return "desconocido";
-      }
-
-    }
-
-
-
 }
