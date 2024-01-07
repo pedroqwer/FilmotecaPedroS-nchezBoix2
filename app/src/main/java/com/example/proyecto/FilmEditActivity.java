@@ -15,10 +15,12 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class FilmEditActivity extends AppCompatActivity {
-Button guardar;
+    private  static final  int PermidoCamara=33;
+    Button guardar;
 
+    ImageView Sipermitido,Nopermitido,imageView;
     Button select,cap;
-    Button cancelar;
+    Button cancelar,permiso;
 
     EditText tit,dir,commm,imb,any;
     ImageView imm;
@@ -28,6 +30,7 @@ Button guardar;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_film_edit);
+
 
 
         Intent intent=getIntent();
@@ -94,12 +97,22 @@ Button guardar;
             }
         });
 
+        permiso=(Button) findViewById(R.id.verificar);
+        permiso.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                VerificarPermisoCamara();
+
+            }
+        });
+
         select=(Button) findViewById(R.id.Captura_imagen);
         select.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(getApplicationContext(),"Funcionalidad no implementada", Toast.LENGTH_LONG ).show();
+                AbrirCamara();
             }
         });
 
@@ -111,5 +124,48 @@ Button guardar;
                 Toast.makeText(getApplicationContext(),"Funcionalidad no implementada", Toast.LENGTH_LONG ).show();
             }
         });
+    }
+
+    private void AbrirCamara() {
+        int estado=ContextCompat.checkSelfPermission(FilmEditActivity.this,Manifest.permission.CAMERA);
+
+        if(estado==PackageManager.PERMISSION_GRANTED){
+            Intent intent=new Intent("android.media.action.IMAGE_CAPTURE");
+            startActivity(intent);
+        }else {
+            Toast.makeText(getApplicationContext(),"No tienes permiso para abrir la camara ",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void VerificarPermisoCamara() {
+        int estado= ContextCompat.checkSelfPermission(FilmEditActivity.this, Manifest.permission.CAMERA);
+
+        if(estado== PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(getApplicationContext(),"Se ha verificado el permiso de camara concedido",Toast.LENGTH_LONG).show();
+
+        }
+        else {
+            ActivityCompat.requestPermissions(FilmEditActivity.this,new String[]{Manifest.permission.CAMERA},PermidoCamara);
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode){
+            case PermidoCamara:
+                if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(getApplicationContext(),"Permiso concedido",Toast.LENGTH_LONG).show();
+                   // permiso.setVisibility(Button.VISIBLE);
+
+                }else {
+                    Toast.makeText(getApplicationContext(),"Permiso no concedido",Toast.LENGTH_LONG).show();
+               //     permiso.setVisibility(Button.GONE);
+
+                }
+            break;
+        }
     }
 }
