@@ -1,9 +1,19 @@
 package com.example.proyecto;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -11,12 +21,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
-  private ListView lista;
-
+    private ListView lista;
+    private final static String Canal="33";
     private static int DATA_FILM =1;
+    Intent intent;
     FilmDataSource filmDataSource;
     FilmListActivity filmListActivity;
     Film film;
@@ -40,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        Intent intent=new Intent(MainActivity.this,FilmDataActivity.class);
+        intent=new Intent(MainActivity.this,FilmDataActivity.class);
         intent.putExtra("Pelicula",i);
         Toast.makeText(getApplicationContext(),"Película selecionada : "+FilmDataSource.films.get(i).getTitle(), Toast.LENGTH_LONG).show();
         startActivity(intent);
@@ -74,14 +86,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             startActivity(in);
         }else if (id==R.id.opcion2){
             Toast.makeText(getApplicationContext(),"Has pulsado añadir peliculas",Toast.LENGTH_LONG).show();
+            NotificacionExpaldible(false,true);
             FilmDataSource.films.add(film=new Film(R.drawable.ic_launcher_background,"Titulo nuevo","Director nuevo",2002,1,2,"Nuevo enlace","Nuevo comentario"));
             filmListActivity.notifyDataSetChanged();
+
             //Intent si=new Intent();
             //startActivity(si);
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
 
     @Override
@@ -126,4 +142,74 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
     }
+    private void NotificacionExpaldible(boolean b, boolean b1) {
+        NotificationCompat.Builder builder=new NotificationCompat.Builder(MainActivity.this,Canal);
+        builder.setSmallIcon(R.drawable.ic_launcher_background);
+        if(b){
+
+            builder.setContentTitle("Notificacion");
+            builder.setContentText("Simple");
+
+        } else  {
+            NotificationCompat.InboxStyle inboxStyle=new NotificationCompat.InboxStyle();
+            inboxStyle.setBigContentTitle("Notificacion extendible");
+
+
+            String Lineas[]=new String[9];
+
+            Lineas[0]="Imagen de la película";
+            Lineas[1]="Titulo de la película";
+            Lineas[2]="Director de la película";
+            Lineas[3]="Año de estreno de la película";
+            Lineas[4]="Gnero de la película";
+            Lineas[5]="Formato de la película";
+            Lineas[6]="ImbUrl de la película";
+            Lineas[7]="Comentario de la película";
+            Lineas[8]="Comentario de la película";
+
+
+            for (int a=0;a<Lineas.length;a++){
+                inboxStyle.addLine(Lineas[a]);
+            }
+
+            builder.setStyle(inboxStyle);
+
+        }
+        builder.setPriority(NotificationCompat.PRIORITY_MAX);
+        if(b1){
+
+
+            intent =new Intent(MainActivity.this, FilmEditActivity.class);
+
+
+            PendingIntent pendingIntent= PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_IMMUTABLE);
+
+            builder.setContentIntent(pendingIntent);
+
+        }
+
+
+        NotificationManager notificationManager=(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel canal = new NotificationChannel(Canal, "Titulo del canal", NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(canal);
+        }
+
+        Notification notificacion = builder.build();
+        notificationManager.notify(Integer.parseInt(Canal), notificacion);
+
+
+
+    }
+    /*
+    private void MostrarmensajePersonalizado() {
+        Toast toast=new Toast(this);
+        View toastL= getLayoutInflater().inflate(R.layout.mensaje,null);
+        toast.setView(toastL);
+        TextView textView= (TextView) toastL.findViewById(R.id.toastMessage);
+        textView.setText("Toast Personalizado");
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.show();
+    }*/
 }
