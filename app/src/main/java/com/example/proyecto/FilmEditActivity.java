@@ -126,7 +126,6 @@ public class FilmEditActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 VerificarPermisoCamara();
-              //  verificarPermisoAlmacenamiento();
 
             }
         });
@@ -164,18 +163,7 @@ public class FilmEditActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),"No tienes permiso para abrir la camara ",Toast.LENGTH_LONG).show();
         }
     }
-   /* private void verificarPermisoAlmacenamiento() {
-        int estado= ContextCompat.checkSelfPermission(FilmEditActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-        if(estado== PackageManager.PERMISSION_GRANTED){
-            Toast.makeText(getApplicationContext(),"Se ha verificado el permiso de acceso al almacenamiento",Toast.LENGTH_LONG).show();
-
-        }
-        else {
-            ActivityCompat.requestPermissions(FilmEditActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},PermidoAlmacenamiento);
-
-        }
-    }*/
 
     private void VerificarPermisoCamara() {
         int estado= ContextCompat.checkSelfPermission(FilmEditActivity.this, Manifest.permission.CAMERA);
@@ -205,17 +193,6 @@ public class FilmEditActivity extends AppCompatActivity {
                 }
                 break;
 
-          /*  case PermidoAlmacenamiento:
-
-                if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(getApplicationContext(),"Permiso concedido almacenamiento",Toast.LENGTH_LONG).show();
-
-                }else {
-                    Toast.makeText(getApplicationContext(),"Permiso no concedido almacenamiento",Toast.LENGTH_LONG).show();
-
-                }
-                break;*/
-
         }
     }
 
@@ -229,68 +206,4 @@ public class FilmEditActivity extends AppCompatActivity {
             }
         }
     }
-
-   /* private void SaveImagen()  {
-
-        OutputStream fos=null;
-
-        File file = null;
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q){
-            ContentResolver resolver=getContentResolver();
-            ContentValues values=new ContentValues();
-
-            String filename=System.currentTimeMillis() +"img";
-
-            values.put(MediaStore.Images.Media.DISPLAY_NAME,filename);
-            values.put(MediaStore.Images.Media.MIME_TYPE,"image/jpg");
-            values.put(MediaStore.Images.Media.RELATIVE_PATH, "pictures/MiAplicación");
-            values.put(MediaStore.Images.Media.IS_PENDING,1);
-
-            Uri uri= MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-            Uri imgUri= resolver.insert(uri,values);
-
-            try {
-                fos=resolver.openOutputStream(imgUri);
-            } catch (FileNotFoundException e) {
-                e.getMessage();
-            }
-
-            values.clear();
-            values.put(MediaStore.Images.Media.IS_PENDING,0);
-            resolver.update(imgUri,values,null,null);
-
-        }else {
-            String imgDir=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-
-            String fileNAme=System.currentTimeMillis()+".jpg";
-
-            file=new File(imgDir,fileNAme);
-            try {
-                fos=new FileOutputStream(file);
-            } catch (FileNotFoundException e) {
-                e.getMessage();
-            }
-        }
-
-        boolean save = bitmap.compress(Bitmap.CompressFormat.JPEG,100,fos);
-
-        if(save){
-            Toast.makeText(getApplicationContext(),"foto guardada",Toast.LENGTH_LONG).show();
-
-        }
-        if(fos!=null){
-            try {
-                fos.flush();
-                fos.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-        if(file!=null){
-            MediaScannerConnection.scanFile(this,new String[]{file.toString()},null,null);
-
-        }
-
-    }*/
 }
