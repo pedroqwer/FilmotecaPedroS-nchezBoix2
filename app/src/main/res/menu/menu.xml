@@ -2,7 +2,7 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-   <item
+    <item
         android:id="@+id/abo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -10,4 +10,10 @@
     <item
         android:id="@+id/opcion2"
         android:title="Añadir pelicula"></item>
+    <item
+        android:id="@+id/info"
+        android:title="Más info" />
+    <item
+        android:id="@+id/Idsalir"
+        android:title="Salir" />
 </menu>
