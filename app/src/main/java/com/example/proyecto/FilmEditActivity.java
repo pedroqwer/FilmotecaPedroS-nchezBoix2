@@ -13,6 +13,8 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -25,6 +27,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -32,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 public class FilmEditActivity extends AppCompatActivity {
     private  static final  int PermidoCamara=33;
@@ -44,56 +48,72 @@ public class FilmEditActivity extends AppCompatActivity {
     Button select,cap;
     Button cancelar,permiso;
 
+    TextView anio;
     Bitmap imagenBitmap;
     EditText tit,dir,commm,imb,any;
     ImageView imm;
     Spinner spinner,spinnerww;
     private Film film;
+    SQLiteDatabase db;
+
+    int posicion;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_film_edit);
 
 
+        db = openOrCreateDatabase("MisPeliculas", MODE_PRIVATE, null);
+
+        db.execSQL("CREATE TABLE IF NOT EXISTS peliculas(Imagen INTEGER, Titulo VARCHAR, Director VARCHAR, Año INTEGER, Genero INTEGER, Formato INTEGER, URL VARCHAR, Comentarios VARCHAR);");
+
 
         Intent intent=getIntent();
-        int posicion=intent.getIntExtra("Pelicula",0);
+        posicion=intent.getIntExtra("Pelicula",0);
 
 
-        film=FilmDataSource.films.get(posicion);
-
-        tit=(EditText) findViewById(R.id.ediciontitulo);
-        tit.setText(FilmDataSource.films.get(posicion).getTitle().toString());
-
-        dir=(EditText) findViewById(R.id.ediciondirector);
-        dir.setText(FilmDataSource.films.get(posicion).getDirector().toString());
-
-        any =(EditText) findViewById(R.id.edicionAño);
-        String anyo=String.valueOf(FilmDataSource.films.get(posicion).getYear());
-        any.setText(anyo);
-
-        imb=(EditText) findViewById(R.id.editarnimb);
-        imb.setText(FilmDataSource.films.get(posicion).getImdbUrl().toString());
-
-        commm=(EditText) findViewById(R.id.edicioncomentario);
-        commm.setText(FilmDataSource.films.get(posicion).getComments().toString());
-
-        spinner=findViewById(R.id.spinner);
-        spinner.setSelection(FilmDataSource.films.get(posicion).getFormat());
-
-        spinnerww=findViewById(R.id.spinner2);
-        spinnerww.setSelection(FilmDataSource.films.get(posicion).getGenre());
-
-
-        imm=findViewById(R.id.imageView);
-        imm.setImageResource(film.getImageResId());
-
+        film=LeerBatos();
+        //FilmDataSource.films.get(posicion);
 
         guardar=(Button) findViewById(R.id.guardar);
+        cancelar=(Button) findViewById(R.id.cancelar);
+
+        crearDatos(obtenerPeliculaDesdeBaseDeDatos());
+
+
+        anio=(TextView) findViewById(R.id.edicionAño);
+
         guardar.setOnClickListener(new View.OnClickListener() {
+            String añoStr = anio.getText().toString();
+            int año = Integer.parseInt(añoStr);
+
             @Override
             public void onClick(View v) {
-                FilmDataSource.films.get(posicion).setTitle(tit.getText().toString());
+
+                String updateQuery = "UPDATE peliculas SET " +
+                        "Imagen = " + film.getImageResId() + ", " +
+                        "Titulo = '" + ((TextView) findViewById(R.id.ediciontitulo)).getText().toString() + "', " +
+                        "Director = '" + ((TextView) findViewById(R.id.ediciondirector)).getText().toString() + "', " +
+                        "Año = " + Integer.parseInt(añoStr) + ", " +
+                        //"Genero = " + spinnerww.getSelectedItemPosition() + ", " +
+                        //"Formato = " + spinner.getSelectedItemPosition() + ", " +
+                        "URL = '" + ((TextView) findViewById(R.id.editarnimb)).getText().toString() + "', " +
+                        "Comentarios = '" + ((TextView) findViewById(R.id.edicioncomentario)).getText().toString() + "' " +
+                        "WHERE id = '" + film.getId() + "'";
+
+                try (SQLiteDatabase db = openOrCreateDatabase("MisPeliculas", MODE_PRIVATE, null)) {
+                    db.execSQL(updateQuery);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                MostrarmensajePersonalizado("Película actualizada");
+
+                setResult(RESULT_OK, null);
+                finish();
+
+
+               /* FilmDataSource.films.get(posicion).setTitle(tit.getText().toString());
                 FilmDataSource.films.get(posicion).setDirector(dir.getText().toString());
                 int year = Integer.parseInt(any.getText().toString());
                 FilmDataSource.films.get(posicion).setYear(year);
@@ -101,19 +121,19 @@ public class FilmEditActivity extends AppCompatActivity {
                 FilmDataSource.films.get(posicion).setComments(commm.getText().toString());
                 FilmDataSource.films.get(posicion).setGenre(spinnerww.getSelectedItemPosition());
                 FilmDataSource.films.get(posicion).setFormat(spinner.getSelectedItemPosition());
-                Toast.makeText(getApplicationContext(),"Cambios aplicados correctamente", Toast.LENGTH_LONG).show();
+                MostrarmensajePersonalizado("Cambios aplicados correctamente");
+
 
                 setResult(RESULT_OK, null);
-                finish();
+                finish();*/
             }
 
 
         });
-        cancelar=(Button) findViewById(R.id.cancelar);
         cancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"Los cambios han sido cancelados", Toast.LENGTH_LONG ).show();
+                MostrarmensajePersonalizado("Los cambios han sido cancelados");
                 Intent intentCancel = new Intent();
                 setResult(RESULT_CANCELED, intentCancel);
                 finish();
@@ -137,7 +157,6 @@ public class FilmEditActivity extends AppCompatActivity {
 
                 AbrirCamara();
 
-
             }
         });
 
@@ -146,9 +165,88 @@ public class FilmEditActivity extends AppCompatActivity {
         cap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"Funcionalidad no implementada", Toast.LENGTH_LONG ).show();
+                MostrarmensajePersonalizado("Funcionalidad no implementada");
+
             }
         });
+    }
+
+    private Film LeerBatos() {
+
+        ArrayList<Film> listado = new ArrayList<Film>();
+
+        Cursor c = db.rawQuery("SELECT * FROM peliculas", null);
+
+        while(c.moveToNext()){
+            int id = c.getInt(0);
+            int imagen = c.getInt(1);
+            String titulo = c.getString(2);
+            String director = c.getString(3);
+            int año = c.getInt(4);
+            int formato = c.getInt(5);
+            int genero = c.getInt(6);
+            String url = c.getString(7);
+            String comentarios = c.getString(8);
+
+            listado.add(new Film(id,imagen, titulo, director, año, formato, genero, url, comentarios));
+        }
+        c.close();
+        return listado.get(posicion);
+    }
+
+    private void crearDatos(Object f) {
+
+        if(f!= null){
+            tit=(EditText) findViewById(R.id.ediciontitulo);
+            tit.setText(film.getTitle());
+
+            dir=(EditText) findViewById(R.id.ediciondirector);
+            dir.setText(film.getDirector());
+
+            any =(EditText) findViewById(R.id.edicionAño);
+            String anyo=String.valueOf(film.getYear());
+            any.setText(anyo);
+
+            imb=(EditText) findViewById(R.id.editarnimb);
+            imb.setText(film.getImdbUrl());
+
+            commm=(EditText) findViewById(R.id.edicioncomentario);
+            commm.setText(film.getComments());
+
+           /*
+            spinner=findViewById(R.id.spinner);
+            spinner.setSelection(film.getFormat());
+
+            spinnerww=findViewById(R.id.spinner2);
+            spinnerww.setSelection(film.getGenre());
+            */
+
+            imm=findViewById(R.id.imageView);
+            imm.setImageResource(film.getImageResId());
+
+        }
+    }
+
+    private Object obtenerPeliculaDesdeBaseDeDatos() {
+        ArrayList<Film> listado = new ArrayList<Film>();
+
+        Cursor c = db.rawQuery("SELECT * FROM peliculas", null);
+
+        while(c.moveToNext()){
+            int id = c.getInt(0);
+            int imagen = c.getInt(1);
+            String titulo = c.getString(2);
+            String director = c.getString(3);
+            int año = c.getInt(4);
+            int formato = c.getInt(5);
+            int genero = c.getInt(6);
+            String url = c.getString(7);
+            String comentarios = c.getString(8);
+
+            listado.add(new Film(id,imagen, titulo, director, año, formato, genero, url, comentarios));
+        }
+        c.close();
+        return listado.get(posicion);
     }
 
 
@@ -160,22 +258,24 @@ public class FilmEditActivity extends AppCompatActivity {
             startActivity(intent);
 
         }else {
-            Toast.makeText(getApplicationContext(),"No tienes permiso para abrir la camara ",Toast.LENGTH_LONG).show();
+            MostrarmensajePersonalizado("No tienes permiso para abrir la camara");
+
         }
     }
 
 
     private void VerificarPermisoCamara() {
-        int estado= ContextCompat.checkSelfPermission(FilmEditActivity.this, Manifest.permission.CAMERA);
 
-        if(estado== PackageManager.PERMISSION_GRANTED){
-            Toast.makeText(getApplicationContext(),"Se ha verificado el permiso de camara concedido",Toast.LENGTH_LONG).show();
+        int estado=ContextCompat.checkSelfPermission(FilmEditActivity.this,Manifest.permission.CAMERA);
 
-        }
-        else {
+        if(estado==PackageManager.PERMISSION_GRANTED){
+
+            MostrarmensajePersonalizado("Se ha verificado el permiso de camara");
+
+        }else {
             ActivityCompat.requestPermissions(FilmEditActivity.this,new String[]{Manifest.permission.CAMERA},PermidoCamara);
-
         }
+
     }
 
     @Override
@@ -184,16 +284,18 @@ public class FilmEditActivity extends AppCompatActivity {
 
         switch (requestCode){
             case PermidoCamara:
-                if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(getApplicationContext(),"Permiso concedido camara",Toast.LENGTH_LONG).show();
+                if(grantResults.length>0&& grantResults[0]==PackageManager.PERMISSION_GRANTED){
+
+                    MostrarmensajePersonalizado("Permiso concedido camara");
 
                 }else {
-                    Toast.makeText(getApplicationContext(),"Permiso no concedido camara",Toast.LENGTH_LONG).show();
+                    MostrarmensajePersonalizado("Permiso concedido no camara");
 
                 }
                 break;
-
         }
+
+
     }
 
     @Override
@@ -205,5 +307,14 @@ public class FilmEditActivity extends AppCompatActivity {
                 imageView.setImageBitmap(bitmap);
             }
         }
+    }
+    private void MostrarmensajePersonalizado(String cadena) {
+        Toast toast = new Toast(this);
+        View toastL = getLayoutInflater().inflate(R.layout.mensaje, null);
+        toast.setView(toastL);
+        TextView textView = (TextView) toastL.findViewById(R.id.toastMessage);
+        textView.setText(cadena);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.show();
     }
 }
