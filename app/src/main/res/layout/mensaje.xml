@@ -11,11 +11,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="#0C0A0A"
-        android:drawableLeft="@android:drawable/btn_star_big_on"
+        android:drawableLeft="@android:drawable/radiobutton_off_background"
         android:drawablePadding="5dp"
         android:paddingLeft="15dip"
         android:paddingRight="15dip"
         android:textColor="@color/black"
         android:textColorHighlight="#D10A0A"
         android:textSize="17sp" />
+
 </LinearLayout>
