@@ -17,10 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.proyectorecuperacionpedro.Film;
-import com.example.proyectorecuperacionpedro.FilmDataSource;
-import com.example.proyectorecuperacionpedro.FilmEditActivity;
-import com.example.proyectorecuperacionpedro.R;
+
 
 import java.util.ArrayList;
 
