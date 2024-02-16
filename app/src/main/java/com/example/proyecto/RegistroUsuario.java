@@ -23,7 +23,7 @@ public class RegistroUsuario extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro_usuario);
 
-        sqLiteDatabase=openOrCreateDatabase("Mis:Usuarios", Context.MODE_PRIVATE,null);
+        sqLiteDatabase=openOrCreateDatabase("Mis_Usuarios", Context.MODE_PRIVATE,null);
         sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS Mis_Usuarios(Usuario VARCHAR , Contraseña VARCHAR);");
 
         UsuarioR=(EditText) findViewById(R.id.UsuarioRe);
