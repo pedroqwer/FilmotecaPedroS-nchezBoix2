@@ -112,7 +112,7 @@ public class ListasPeliculas  extends AppCompatActivity implements AdapterView.O
 
                 if(id==R.id.abo){
                         MostrarmensajePersonalizado("Has pulsado Acerca de");
-                        Intent in =new Intent(this, AbouTActivityy.class);
+                        Intent in =new Intent(this, AboutActivityy.class);
                         startActivity(in);
                 }else if (id==R.id.opcion2){
                     iden=++contador;
@@ -136,14 +136,18 @@ public class ListasPeliculas  extends AppCompatActivity implements AdapterView.O
                         NotificacionExpaldible(false,true);*/
 
                 } else if (id==R.id.Idsalir) {
-                        MostrarmensajePersonalizado("Has vuelto a la página de carga");
-                        finish();
+                    finish();
                 } else if (id==R.id.info) {
-                        MostrarmensajePersonalizado("Más información");
-                        Intent intent=new Intent(this, MoeActivity.class);
-                        startActivity(intent);
-                }
+                    MostrarmensajePersonalizado("Más información");
+                    Intent intent=new Intent(this, MoeActivity.class);
+                    startActivity(intent);
+                } else if (id==R.id.actu) {
 
+                    Intent intent=new Intent(this, ListasPeliculas.class);
+                    startActivity(intent);
+                    finish();
+
+                }
                 return super.onOptionsItemSelected(item);
         }
 
