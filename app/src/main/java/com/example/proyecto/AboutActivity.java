@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AbouTActivityy extends AppCompatActivity {
+public class AboutActivityy extends AppCompatActivity {
 
     Button button,buttonS,fin;
 
