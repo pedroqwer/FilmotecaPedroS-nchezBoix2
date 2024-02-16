@@ -16,4 +16,7 @@
     <item
         android:id="@+id/Idsalir"
         android:title="Salir" />
+    <item
+        android:id="@+id/actu"
+        android:title="Actualizar" />
 </menu>
