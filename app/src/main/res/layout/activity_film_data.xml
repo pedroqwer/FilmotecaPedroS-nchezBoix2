@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".FilmDataActivity">
 
-   <androidx.cardview.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="406dp"
         android:layout_height="435dp"
@@ -84,8 +84,9 @@
                 android:layout_height="wrap_content"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:text="Ver en IMDB"
                 app:cornerRadius="0dp"
+                android:text="Ver en IMDB"
+
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.842"
@@ -174,4 +175,3 @@
         app:layout_constraintVertical_bias="0.924" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
