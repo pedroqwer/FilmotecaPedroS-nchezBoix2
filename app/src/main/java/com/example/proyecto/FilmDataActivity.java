@@ -1,11 +1,15 @@
 package com.example.proyecto;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -13,26 +17,36 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.proyectorecuperacionpedro.Film;
+import com.example.proyectorecuperacionpedro.FilmDataSource;
+import com.example.proyectorecuperacionpedro.FilmEditActivity;
+import com.example.proyectorecuperacionpedro.R;
+
 import java.util.ArrayList;
 
 public class FilmDataActivity extends AppCompatActivity  {
 
-  int posicion;
+    int posicion;
     Film film;
     TextView tit, dir, commm, any;
     Button bo, volver, editar;
     private static final int Edi = 1;
     String anyo, formatoGenero, formato;
     int gen, form;
+    SQLiteDatabase db;
     ImageView imgView;
     TextView txtComentario, txtFormato, txtGenero, txtNumAnyo, txtNomDirector, txtNomPelicula;
     Button btnWebIMDB, btnVolverMenu, btnEditar;
+    ArrayList<Film> fil;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_film_data);
 
+        //Codigo antes de la modificación
+        /*
         imgView = (ImageView) findViewById(R.id.imaa);
         txtNomPelicula = (TextView) findViewById(R.id.tituloo);
         txtNomDirector = (TextView) findViewById(R.id.directorrr);
@@ -45,10 +59,20 @@ public class FilmDataActivity extends AppCompatActivity  {
         btnVolverMenu = (Button) findViewById(R.id.BotonvolverList);
         btnEditar = (Button) findViewById(R.id.edit);
 
-        Intent intent = getIntent();
-        posicion = intent.getIntExtra("Pelicula", 0);
+*/
+        db = openOrCreateDatabase("MisPeliculas", MODE_PRIVATE, null);
+
+        Intent intentS = getIntent();
+        posicion = intentS.getIntExtra("Pelicula", 0) ;
+
+        film=leerBase();
 
 
+        obtenerPeliculaDesdeBaseDeDatos();
+        crearDatos(obtenerPeliculaDesdeBaseDeDatos());
+
+        //Codigo antes de la modificación
+        /*
         imgView.setImageResource(FilmDataSource.films.get(posicion).getImageResId());
         txtNomPelicula.setText(FilmDataSource.films.get(posicion).getTitle().toString());
         txtNomDirector.setText(FilmDataSource.films.get(posicion).getDirector().toString());
@@ -92,7 +116,8 @@ public class FilmDataActivity extends AppCompatActivity  {
         btnWebIMDB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Redirigiendote a la página de IMDB de la película...", Toast.LENGTH_SHORT).show();
+                MostrarmensajePersonalizado("Redirigiendote a la página de IMDB de la película...");
+
                 Intent intentWeb = new Intent(Intent.ACTION_VIEW);
                 intentWeb.setData(Uri.parse(FilmDataSource.films.get(posicion).getImdbUrl()));
                 startActivity(intentWeb);
@@ -107,9 +132,11 @@ public class FilmDataActivity extends AppCompatActivity  {
         volver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Has vuelto al inicio", Toast.LENGTH_SHORT).show();
+
+                MostrarmensajePersonalizado("Has vuelto al inicio");
+
                 Intent i = new Intent();
-                setResult(RESULT_OK, intent);
+                setResult(RESULT_OK, intentS);
                 finish();
             }
 
@@ -124,7 +151,7 @@ public class FilmDataActivity extends AppCompatActivity  {
             public void onClick(View v) {
 
 
-                Toast.makeText(getApplicationContext(), "Edición de película", Toast.LENGTH_SHORT).show();
+                MostrarmensajePersonalizado("Edición de película");
 
                 Intent intentFilmEditActivity = new Intent(FilmDataActivity.this, FilmEditActivity.class);
                 intentFilmEditActivity.putExtra("Pelicula", posicion);
@@ -133,7 +160,158 @@ public class FilmDataActivity extends AppCompatActivity  {
             }
 
         });
+*/
+    }
 
+    private Film leerBase() {
+        ArrayList<Film> listado = new ArrayList<Film>();
+
+        Cursor c = db.rawQuery("SELECT * FROM peliculas", null);
+
+        while(c.moveToNext()){
+            int id = c.getInt(0);
+            int imagen = c.getInt(1);
+            String titulo = c.getString(2);
+            String director = c.getString(3);
+            int año = c.getInt(4);
+            int formato = c.getInt(5);
+            int genero = c.getInt(6);
+            String url = c.getString(7);
+            String comentarios = c.getString(8);
+
+            listado.add(new Film(id,imagen, titulo, director, año, formato, genero, url, comentarios));
+        }
+        c.close();
+        return listado.get(posicion);
+    }
+
+    private void crearDatos(Object f) {
+
+            if (f != null) {
+                imgView = (ImageView) findViewById(R.id.imaa);
+                txtNomPelicula = (TextView) findViewById(R.id.tituloo);
+                txtNomDirector = (TextView) findViewById(R.id.directorrr);
+                txtNumAnyo = (TextView) findViewById(R.id.anyoo);
+                txtFormato = (TextView) findViewById(R.id.F);
+                txtGenero = (TextView) findViewById(R.id.G);
+                txtComentario = (TextView) findViewById(R.id.comen);
+                txtComentario.setMovementMethod(new ScrollingMovementMethod());
+                btnWebIMDB = (Button) findViewById(R.id.botonenlace);
+                btnVolverMenu = (Button) findViewById(R.id.BotonvolverList);
+                btnEditar = (Button) findViewById(R.id.edit);
+
+                imgView.setImageResource(film.getImageResId());
+                txtNomPelicula.setText(film.getTitle());
+                txtNomDirector.setText(film.getDirector());
+
+                anyo = String.valueOf(film.getYear());
+                txtNumAnyo.setText(anyo);
+
+                formatoGenero = "";
+
+                form = film.getFormat();
+
+                if (form == 0) {
+                    formato = "DVD";
+                } else if (form == 1) {
+                    formato = " Bluray";
+                } else if (form == 2) {
+                    formato = "Digital";
+                }
+
+
+                txtGenero.setText(formato);
+
+                gen = film.getGenre();
+                if (gen == 0) {
+                    formatoGenero = "Action";
+                } else if (gen == 1) {
+                    formatoGenero = "Comedy";
+                } else if (gen == 2) {
+                    formatoGenero = "Drama";
+                } else if (gen == 3) {
+                    formatoGenero = "Scifi";
+                } else if (gen == 4) {
+                    formatoGenero = "Horror";
+                }
+
+
+                txtFormato.setText(formatoGenero);
+
+                txtComentario.setText(film.getComments());
+
+                btnWebIMDB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        MostrarmensajePersonalizado("Redirigiendote a la página de IMDB de la película...");
+
+                        Intent intentWeb = new Intent(Intent.ACTION_VIEW);
+                        intentWeb.setData(Uri.parse(film.getImdbUrl()));
+                        startActivity(intentWeb);
+                    }
+                });
+
+
+                //Botones
+
+                volver = (Button) findViewById(R.id.BotonvolverList);
+
+                volver.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        MostrarmensajePersonalizado("Has vuelto al inicio");
+
+                        Intent i = new Intent();
+                        setResult(RESULT_OK, i);
+                        finish();
+                    }
+
+
+                });
+
+
+                editar = (Button) findViewById(R.id.edit);
+
+                editar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+
+                        MostrarmensajePersonalizado("Edición de película");
+
+                        Intent intentFilmEditActivity = new Intent(FilmDataActivity.this, FilmEditActivity.class);
+                        intentFilmEditActivity.putExtra("Pelicula", posicion);
+                        startActivityForResult(intentFilmEditActivity, Edi);
+
+                    }
+
+                });
+
+
+            }
+    }
+
+    private Film obtenerPeliculaDesdeBaseDeDatos() {
+        ArrayList<Film> listado = new ArrayList<Film>();
+
+        Cursor c = db.rawQuery("SELECT * FROM peliculas", null);
+
+        while(c.moveToNext()){
+            int id = c.getInt(0);
+            int imagen = c.getInt(1);
+            String titulo = c.getString(2);
+            String director = c.getString(3);
+            int año = c.getInt(4);
+            int formato = c.getInt(5);
+            int genero = c.getInt(6);
+            String url = c.getString(7);
+            String comentarios = c.getString(8);
+
+            listado.add(new Film(id,imagen, titulo, director, año, formato, genero, url, comentarios));
+        }
+        c.close();
+        return listado.get(posicion);
     }
 
     @Override
@@ -141,24 +319,26 @@ public class FilmDataActivity extends AppCompatActivity  {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Edi) {
             if (resultCode == RESULT_OK) {
-                Toast.makeText(getApplicationContext(), "Cambios aplicados correctamente", Toast.LENGTH_SHORT).show();
+                MostrarmensajePersonalizado("Cambios aplicados correctamente");
 
-                txtNomPelicula.setText(FilmDataSource.films.get(posicion).getTitle().toString());
-                txtNomDirector.setText(FilmDataSource.films.get(posicion).getDirector().toString());
-                anyo = String.valueOf(FilmDataSource.films.get(posicion).getYear());
+                
+                txtNomPelicula.setText(film.getTitle());
+                txtNomDirector.setText(film.getDirector());
+                anyo = String.valueOf(film.getYear());
                 txtNumAnyo.setText(anyo);
                 btnWebIMDB.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getApplicationContext(), "Redirigiendote a la página de IMDB de la película...", Toast.LENGTH_SHORT).show();
-                        Intent intentWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(FilmDataSource.films.get(posicion).getImdbUrl()));
+                        MostrarmensajePersonalizado("Redirigiendote a la página de IMDB de la película...");
+
+                        Intent intentWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(film.getImdbUrl()));
                         startActivity(intentWeb);
                     }
                 });
-                txtComentario.setText(FilmDataSource.films.get(posicion).getComments().toString());
+                txtComentario.setText(film.getComments());
 
                 formato = "";
-                form = FilmDataSource.films.get(posicion).getFormat();
+                form = film.getFormat();
                 if (form == 0) {
                     formato = "DVD ";
                 } else if (form == 1) {
@@ -168,7 +348,7 @@ public class FilmDataActivity extends AppCompatActivity  {
                 }
 
 
-                gen = FilmDataSource.films.get(posicion).getGenre();
+                gen = film.getGenre();
                 if (gen == 0) {
                     formatoGenero = "Action";
                 } else if (gen == 1) {
@@ -184,10 +364,19 @@ public class FilmDataActivity extends AppCompatActivity  {
 
                 txtGenero.setText(formato);
 
-
+                leerBase();
             } else {
-                Toast.makeText(getApplicationContext(), "Los cambios han sido cancelados", Toast.LENGTH_SHORT).show();
+                MostrarmensajePersonalizado("Los cambios han sido cancelados");
             }
         }
+    }
+    private void MostrarmensajePersonalizado(String cadena) {
+        Toast toast = new Toast(this);
+        View toastL = getLayoutInflater().inflate(R.layout.mensaje, null);
+        toast.setView(toastL);
+        TextView textView = (TextView) toastL.findViewById(R.id.toastMessage);
+        textView.setText(cadena);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.show();
     }
 }
