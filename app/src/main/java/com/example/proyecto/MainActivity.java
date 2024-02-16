@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -34,9 +35,14 @@ public class MainActivity extends AppCompatActivity {
         Contraseña = (EditText) findViewById(R.id.IDContraseña);
 
         Ingresar = (Button) findViewById(R.id.IDIngresar);
+
+        Usuario.setText("");
+        Contraseña.setText("");
+
         Ingresar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String usuario, contraseña;
 
                 usuario = Usuario.getText().toString();
@@ -56,20 +62,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void IngresarUsuario(String usuario, String contraseña) {
 
-        Toast.makeText(getApplicationContext(),"Usuario -> "+usuario+ " Contraseña -> " +contraseña,Toast.LENGTH_LONG).show();
+        MostrarmensajePersonalizado("Usuario -> "+usuario+ " Contraseña -> " +contraseña);
+
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM Mis_Usuarios WHERE Usuario= '" + usuario + "' AND  Contraseña ='" + contraseña + "'", null);
 
-        if (cursor.getCount()>0) {
+        if (cursor.getCount()==0) {
 
-            Toast.makeText(this, "No existe", Toast.LENGTH_SHORT).show();
+            MostrarmensajePersonalizado("No existe");
+
             cursor.close();
 
         } else {
 
-            Toast.makeText(this, "dentro", Toast.LENGTH_SHORT).show();
+            MostrarmensajePersonalizado("Estas dentro de la base dde datos");
             cursor.close();
             Intent intent = new Intent(this, ListasPeliculas.class);
-            intent.putExtra("Nombre", usuario);
             startActivity(intent);
         }
     }
@@ -77,5 +84,16 @@ public class MainActivity extends AppCompatActivity {
     private void RegistrarUsuario() {
         Intent intent = new Intent(this, RegistroUsuario.class);
         startActivity(intent);
+    }
+
+    private void MostrarmensajePersonalizado(String cadena) {
+
+        Toast toast = new Toast(this);
+        View toastL = getLayoutInflater().inflate(R.layout.mensaje, null);
+        toast.setView(toastL);
+        TextView textView = (TextView) toastL.findViewById(R.id.toastMessage);
+        textView.setText(cadena);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.show();
     }
 }
